@@ -1,11 +1,24 @@
 import numpy as np
 import itertools
 
+class Tree: 
+	def __init__(self,innerNodes={},leafNodes={}): 
+		# ***Not sure about these...
+		self.innerNodes=innerNodes # dictionary of TreeNodes with 
+		self.leafNodes=leafNodes # dictionary of TreeNodes with an innerNodes as parent
+
+	def addInnerNode(): 
+		# ***TO BE WRITTEN
+		pass
+	def addLeafNode(): 
+		# ***TO BE WRITTEN
+		pass
+
 class TreeNode:
 	def __init__(self,name,parent,distance,child1=None,child2=None):
 		self.name=name
 		self.parent=parent
-		self.distance = distance
+		self.distance = distance # distance to parent
 		self.a=child1
 		self.b=child2
 
@@ -73,6 +86,7 @@ def trimming_factor(d):
 def additive_phylogeny(d):
 	d = d.copy()
 	factors = []
+	d_ij = [] 
 	removed = []
 	remaining = list(range(d.shape[0]))
 	while(d.shape[0]>2):
@@ -80,6 +94,7 @@ def additive_phylogeny(d):
 		print(remaining)
 		print(d)
 		trimming,i,j,k = trimming_factor(d)
+		d_ij.append(d[i,j]) # for backtrace and constructing tree
 		# subtract the trimming factor everywhere but the diagonal
 		d-=(1-np.identity(d.shape[0]))*(2*trimming)
 		factors.append(trimming) # for backtrace
@@ -93,7 +108,7 @@ def additive_phylogeny(d):
 	print(d)
 	factors = factors + [d[0][1]]
 	removed = removed + [(remaining[0],remaining[1])]
-	return factors,removed
+	return factors,removed,d_ij
 
 print(additive_phylogeny(test1))
 print(additive_phylogeny(test2))
@@ -101,30 +116,34 @@ print(additive_phylogeny(test2))
 
 # WORK IN PROGRESS
 #              v distance between last two nodes
-#              v                              v last two nodes
-# ([1.0, 2.0, 2.0], [(2, 0, 1), (1, 3, 2), (1, 2)])
-def backtrace(factors, removed): 
+#              v                              v last two nodes 
+#			   v                              v		v d_ij
+# ([1.0, 2.0, 2.0], [(2, 0, 1), (1, 3, 2), (1, 2)], [3.0, 5.0])
+def backtrace(factors, removed, d_ij): 
 	# factors[-1] = last distance between last two nodes left in add_phyl
 	# removed[-1] = tuple of only two nodes
 	temp_tuple = removed.pop(-1)
 	a = TreeNode(temp_tuple[0], None, factors[-1])
 	b = TreeNode(temp_tuple[1], a, factors[-1])
-	a.parent = b
+	a.parent = b 
 	
 	# (self,name,parent,distance,child1=None,child2=None)
 	# node_tuple is (i, j, k), when j was removed 
-	for node_tuple in removed: 
-		# IDEA: 
-		# 	make j 
-		#	make new internal node w j as parent
-		# 	dist from j to internal node was the trimmed factor
-		#	make i and k be children of new internal node
-		# 	set internal node as parent of i and k
-		# 	set distances i and k to be dist += trimming factor
-		# 		then on next recursion: 
-		# 		new j node
-		# 		new internal node ***how to find distance? 
-		# j = TreeNode(node_tuple, None, ???, )
+	for i, node_tuple in reversed(list(enumerate(removed))): 
+		# 11/18 Workspace:
+			# get j
+			# get d_ij
+			# get trimming factor
+			# get distance between i and k -> how to do this???
+			# 	if i = k's parent or k = i's parent
+			# 		then get i.distance or k.distance
+			# 	if node(s) in between i and k
+			# 		then must bidirectionally walk tree to find shared node
+			# 		and sum up distances travelled
+			# make new internal node
+			# 	dist i to new internal node = x = d_ij - 2*trimming
+			# 	dist j to new internal node = trimming
+			# 	dist k to new internal node = d_ik - x
 
 		# v = TreeNode(???, None, ???, a, b)
 		pass
