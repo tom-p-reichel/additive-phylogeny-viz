@@ -2,25 +2,18 @@ import numpy as np
 import itertools
 
 class Tree: 
-	def __init__(self,innerNodes={},leafNodes={}): 
+	def __init__(self,nodes={}): 
 		# ***Not sure about these...
-		self.innerNodes=innerNodes # dictionary of TreeNodes with 
-		self.leafNodes=leafNodes # dictionary of TreeNodes with an innerNodes as parent
+		self.nodes=nodes #dictionary of treenodes
 
-	def addInnerNode(): 
-		# ***TO BE WRITTEN
-		pass
-	def addLeafNode(): 
-		# ***TO BE WRITTEN
-		pass
+	def addNode(self, node, )
 
 class TreeNode:
-	def __init__(self,name,parent,distance,child1=None,child2=None):
+	def __init__(self,name,parent,distance,children=[]):
 		self.name=name
 		self.parent=parent
-		self.distance = distance # distance to parent
-		self.a=child1
-		self.b=child2
+		self.distance=distance #distance to parent
+		self.children=children #changed from child1 and child2 > children
 
 test1 = np.array([[0,5,3,4],
 				  [5,0,6,3],
@@ -126,6 +119,8 @@ def backtrace(factors, removed, d_ij):
 	a = TreeNode(temp_tuple[0], None, factors[-1])
 	b = TreeNode(temp_tuple[1], a, factors[-1])
 	a.parent = b 
+
+	T = Tree()
 	
 	# (self,name,parent,distance,child1=None,child2=None)
 	# node_tuple is (i, j, k), when j was removed 
@@ -144,6 +139,13 @@ def backtrace(factors, removed, d_ij):
 			# 	dist i to new internal node = x = d_ij - 2*trimming
 			# 	dist j to new internal node = trimming
 			# 	dist k to new internal node = d_ik - x
+
+		i = node_tuple[0]
+		j = node_tuple[1]
+		k = node_tuple[2]
+		d = d_ij[i]
+		trimming = factors[i]
+
 
 		# v = TreeNode(???, None, ???, a, b)
 		pass
