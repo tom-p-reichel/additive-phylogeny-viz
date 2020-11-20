@@ -1,19 +1,6 @@
 import numpy as np
 import itertools
-
-class Tree: 
-	def __init__(self,nodes={}): 
-		# ***Not sure about these...
-		self.nodes=nodes #dictionary of treenodes
-
-	def addNode(self, node, )
-
-class TreeNode:
-	def __init__(self,name,parent,distance,children=[]):
-		self.name=name
-		self.parent=parent
-		self.distance=distance #distance to parent
-		self.children=children #changed from child1 and child2 > children
+import * from utilities
 
 test1 = np.array([[0,5,3,4],
 				  [5,0,6,3],
@@ -76,6 +63,33 @@ def trimming_factor(d):
 
 	return trimmingfactors[m],i[m],j[m],k[m]
 
+def add_trimming_factor(t, trimming):
+	# find every leaf and add trimming parameter 
+	# does getroots get all the roots
+	roots = getroots(t)[1]
+	for root in roots:
+		current = root  
+    	stack = [] # initialize stack
+      
+    	while True: 
+        	if current is not None: 
+              
+            	stack.append(current) 
+          
+            	current = current.child1  
+  
+        	elif(stack): 
+            	current = stack.pop()
+            	current = current.child2
+				if !current.child1 and !current.child2:
+					# trimming changes for each node, need to get it
+					# from where it's stored
+					node.distance = trimming  
+        	else: 
+            	break
+	
+	
+
 def additive_phylogeny(d):
 	d = d.copy()
 	factors = []
@@ -120,8 +134,6 @@ def backtrace(factors, removed, d_ij):
 	b = TreeNode(temp_tuple[1], a, factors[-1])
 	a.parent = b 
 
-	T = Tree()
-	
 	# (self,name,parent,distance,child1=None,child2=None)
 	# node_tuple is (i, j, k), when j was removed 
 	for i, node_tuple in reversed(list(enumerate(removed))): 
@@ -145,7 +157,6 @@ def backtrace(factors, removed, d_ij):
 		k = node_tuple[2]
 		d = d_ij[i]
 		trimming = factors[i]
-
 
 		# v = TreeNode(???, None, ???, a, b)
 		pass
