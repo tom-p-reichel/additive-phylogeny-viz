@@ -1,6 +1,6 @@
 import numpy as np
 import itertools
-import * from utilities
+from utilities import *
 
 test1 = np.array([[0,5,3,4],
 				  [5,0,6,3],
@@ -65,8 +65,8 @@ def trimming_factor(d):
 
 def add_trimming_factor(t, trimming):
 	# find every leaf and add trimming parameter 
-	# does getroots get all the roots
-	roots = getroots(t)[1]
+	# check format in roots
+	roots = getroots(t)
 	for root in roots:
 		current = root  
     	stack = [] # initialize stack
@@ -120,13 +120,12 @@ def additive_phylogeny(d):
 print(additive_phylogeny(test1))
 print(additive_phylogeny(test2))
 
-
 # WORK IN PROGRESS
 #              v distance between last two nodes
 #              v                              v last two nodes 
-#			   v                              v		v d_ij
+#			   v                              v		 v d_ij
 # ([1.0, 2.0, 2.0], [(2, 0, 1), (1, 3, 2), (1, 2)], [3.0, 5.0])
-def backtrace(factors, removed, d_ij): 
+def backtrace(d, factors, removed, d_ij): 
 	# factors[-1] = last distance between last two nodes left in add_phyl
 	# removed[-1] = tuple of only two nodes
 	temp_tuple = removed.pop(-1)
@@ -152,11 +151,29 @@ def backtrace(factors, removed, d_ij):
 			# 	dist j to new internal node = trimming
 			# 	dist k to new internal node = d_ik - x
 
-		i = node_tuple[0]
-		j = node_tuple[1]
-		k = node_tuple[2]
+		i_name = node_tuple[0]
+		i = getnodefromname(a_node,i)
+		j_name = node_tuple[1]
+		j = getnodefromname(a_node,j)
+		k_name = node_tuple[2]
+		k = getnodefromname(a_node,k)
 		d = d_ij[i]
 		trimming = factors[i]
+		path_ik = treepath(i_node,k)
+
+		# Find i and k as two connected nodes whose edge will be the edge j attaches to 
+		# trace path starting from i
+		# 	k = first node in which d_ij < d_i>pathnode
+		# 	i = node immediately before on path
+
+		i_node = path[0]
+		k_node = path[1]
+		for node in path_ik: 
+			if 
+
+		# insertbetween = (d,???j,???)
+
+
 
 		# v = TreeNode(???, None, ???, a, b)
 		pass
