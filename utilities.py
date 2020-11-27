@@ -23,15 +23,6 @@ def printtree(t):
     acc.append("}")
     return "\n".join(acc)
 
-"""
-def printtree_helper(t,acc):
-    for x in [t.child1,t.child2]:
-        if (not (x is None)):
-            if (not (t.name is None)):
-                acc.append(f"node{id(t)} [label=\"{t.name}\"];")
-            acc.append(f"node{id(t)} -> node{id(x)} [label=\"{x.distance}\"];")
-            printtree_helper(t.child1,acc)
-"""
 def printtree_helper(t,acc):
     if (not (t is None)):
         if (not (t.name is None)):
@@ -78,38 +69,37 @@ def treepath(root,b,path=[],distances=[]):
     # Check children if any, return only if not None (means found b)
     tmp_passing = path.copy()
     if root.child1: 
-        temp_path1 = treepath_helper(root.child1,b,tmp_passing) 
+        temp_path1 = treepath_helper(root.child1,b,tmp_passing + [root.child1.distance]) 
         if temp_path1 != None: 
             return temp_path1
         elif root.child2: 
-            temp_path2 = treepath_helper(root.child2,b,tmp_passing)
+            temp_path2 = treepath_helper(root.child2,b,tmp_passing + [root.child2.distance])
             if temp_path2 != None: 
                 return temp_path2
 
     # Go up a parent
-    distances.append(root.distance)
     roots = getroots(root)
     # print("roots: " + str(roots))
     # print("cur path: " + str(path))
     if roots[0] in path and roots[1] in path: 
         return None
-    path = treepath(root.parent,b,tmp_passing)
+    path = treepath(root.parent,b,tmp_passing + [root.distance])
 
     return path
 
 # TODO track distances
-def treepath_helper(root,b,path=[],distances=[]):
+def treepath_helper(root,b,path=[]):
     path = path + [root]
     #print(f"contemplating {root.name}")
     if (root.name==b):
         # base case
         return path
     if (not (root.child1 is None)):
-        tmp = treepath_helper(root.child1,b,path=path)
+        tmp = treepath_helper(root.child1,b,path=path + [root.child1.distance])
         if (not (tmp is None)):
             return tmp
-    if (not (root.child1 is None)):
-        tmp = treepath_helper(root.child2,b,path=path)
+    if (not (root.child2 is None)):
+        tmp = treepath_helper(root.child2,b,path=path + [root.child2.distance])
         if (not (tmp is None)):
             return tmp
     return None # it's not us, and our children don't have it.
@@ -123,7 +113,6 @@ if __name__=="__main__":
     roota.parent=rootb
 
     
-    """
     print(printtree(roota))
 
     node7 = TreeNode(7,None,3,None,None)
@@ -154,5 +143,5 @@ if __name__=="__main__":
     path = []
     print("test btwn node 1 and node9")
     print(treepath(node1,node9.name,path))
-    """
+    
 

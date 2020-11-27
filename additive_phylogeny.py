@@ -69,27 +69,27 @@ def add_trimming_factor(t, trimming):
 	roots = getroots(t)
 	for root in roots:
 		current = root  
-    	stack = [] # initialize stack
-      
-    	while True: 
-        	if current is not None: 
-              
-            	stack.append(current) 
-          
-            	current = current.child1  
-  
-        	elif(stack): 
-            	current = stack.pop()
-            	current = current.child2
-				if !current.child1 and !current.child2:
+		stack = [] # initialize stack
+		
+		while True: 
+			if current is not None: 
+				
+				stack.append(current) 
+			
+				current = current.child1  
+
+			elif(stack): 
+				current = stack.pop()
+				current = current.child2
+				if (current.child1 is None) and (current.child2 is None):
 					# trimming changes for each node, need to get it
 					# from where it's stored
 					node.distance = trimming  
-        	else: 
-            	break
+			else: 
+				break
 	
 	
-
+"""
 def additive_phylogeny(d):
 	d = d.copy()
 	factors = []
@@ -116,10 +116,9 @@ def additive_phylogeny(d):
 	factors = factors + [d[0][1]]
 	removed = removed + [(remaining[0],remaining[1])]
 	return factors,removed,d_ij
+"""
 
-print(additive_phylogeny(test1))
-print(additive_phylogeny(test2))
-
+"""
 # WORK IN PROGRESS
 #              v distance between last two nodes
 #              v                              v last two nodes 
@@ -177,3 +176,59 @@ def backtrace(d, factors, removed, d_ij):
 
 		# v = TreeNode(???, None, ???, a, b)
 		pass
+"""
+
+
+def additive_phylogeny2(d):
+	d = d.copy()
+	factors = []
+	ds = []
+	removed = []
+	remaining = list(range(d.shape[0]))
+	while(d.shape[0]>2):
+		print("next run")
+		print(remaining)
+		print(d)
+		trimming,i,j,k = trimming_factor(d)
+		# subtract the trimming factor everywhere but the diagonal
+		d-=(1-np.identity(d.shape[0]))*(2*trimming)
+		ds.append((remaining.copy(),d))
+		factors.append(trimming) # for backtrace
+		removed.append((remaining[i],remaining[j],remaining[k]))
+		remaining.remove(remaining[j])
+		d = d[list(range(j))+list(range(j+1,d.shape[0]))]
+		d = d.T[list(range(j))+list(range(j+1,d.shape[1]))].T
+	# add last distance & last two attributes for backtrace...
+	print("next run")
+	print(remaining)
+	print(d)
+	factors = factors + [d[0][1]]
+	removed = removed + [(remaining[0],remaining[1])]
+	ds.append((remaining,d))
+	return factors,removed,ds
+
+def backtrace2(factors,removed,ds):
+	# base case
+	root1 = TreeNode(ds[-1][0][0],None,ds[-1][1][0,1],None,None)
+	root2 = TreeNode(ds[-1][0][1],root1,ds[-1][1][0,1],None,None)
+	root1.parent=root2
+	for x in range(len(factors)-2,-1,-1):
+		header,d = ds[x]
+		i,j,k = removed[x]
+		# go on, add the thing to the tree. i DARE you.
+		path = treepath(getnodefromname(root1,i),k)
+		acc = 0
+		i = iter(enumerate(path[1::2]))
+		while acc<d[header.index(i),header.index(j)]:
+			index,tmp = next(i)
+			acc+=tmp
+		left,right = path[::2][index],path[::2][index+1]
+		# insert the thing between left and right
+		insertbetween(d,left,TreeNode(j,None,None),right)
+		# now we add the trimming factor
+		add_trimming_factor(root1,factors[x])
+	return root1
+
+print(additive_phylogeny2(test1))
+print(additive_phylogeny2(test2))
+
