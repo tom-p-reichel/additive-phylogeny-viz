@@ -1,6 +1,7 @@
 import numpy as np
 import itertools
 from utilities import *
+import os
 
 test1 = np.array([[0,5,3,4],
 				  [5,0,6,3],
@@ -14,6 +15,7 @@ test1 = np.array([[0,5,3,4],
 # C      D
 # """
 
+# test2... i think?
 # """
 # A      B
 # 1\_2__/ 4
@@ -37,7 +39,7 @@ test1 = np.array([[0,5,3,4],
 
 
 test2 = np.array([[0,7,3,6],
-				  [5,0,8,7],
+				  [7,0,8,7],
 				  [3,8,0,7],
 				  [6,7,7,0]
 				],dtype="float32")
@@ -55,7 +57,7 @@ def trimming_factor(d):
 	trimmingfactors = (d[i,j]+d[j,k]-d[i,k])/2
 
 	# find the indexes where these factors are positive and filter to only those
-	pindices = np.argwhere(trimmingfactors>0).flatten()
+	pindices = np.argwhere(trimmingfactors>=0).flatten()
 	i,j,k,trimmingfactors = i[pindices],j[pindices],k[pindices],trimmingfactors[pindices]
 
 	# return the minimum
@@ -67,116 +69,23 @@ def add_trimming_factor(t, trimming):
 	# find every leaf and add trimming parameter 
 	# check format in roots
 	roots = getroots(t)
-	for root in roots:
-		current = root  
-		stack = [] # initialize stack
-		
-		while True: 
-			if current is not None: 
-				
-				stack.append(current) 
-			
-				current = current.child1  
+	add_trimming_factor_helper(roots[0],trimming)
+	add_trimming_factor_helper(roots[1],trimming)
 
-			elif(stack): 
-				current = stack.pop()
-				current = current.child2
-				if (current.child1 is None) and (current.child2 is None):
-					# trimming changes for each node, need to get it
-					# from where it's stored
-					node.distance = trimming  
-			else: 
-				break
-	
-	
-"""
-def additive_phylogeny(d):
-	d = d.copy()
-	factors = []
-	d_ij = [] 
-	removed = []
-	remaining = list(range(d.shape[0]))
-	while(d.shape[0]>2):
-		print("next run")
-		print(remaining)
-		print(d)
-		trimming,i,j,k = trimming_factor(d)
-		d_ij.append(d[i,j]) # for backtrace and constructing tree
-		# subtract the trimming factor everywhere but the diagonal
-		d-=(1-np.identity(d.shape[0]))*(2*trimming)
-		factors.append(trimming) # for backtrace
-		removed.append((remaining[i],remaining[j],remaining[k]))
-		remaining.remove(remaining[j])
-		d = d[list(range(j))+list(range(j+1,d.shape[0]))]
-		d = d.T[list(range(j))+list(range(j+1,d.shape[1]))].T
-	# add last distance & last two attributes for backtrace...
-	print("next run")
-	print(remaining)
-	print(d)
-	factors = factors + [d[0][1]]
-	removed = removed + [(remaining[0],remaining[1])]
-	return factors,removed,d_ij
-"""
-
-"""
-# WORK IN PROGRESS
-#              v distance between last two nodes
-#              v                              v last two nodes 
-#			   v                              v		 v d_ij
-# ([1.0, 2.0, 2.0], [(2, 0, 1), (1, 3, 2), (1, 2)], [3.0, 5.0])
-def backtrace(d, factors, removed, d_ij): 
-	# factors[-1] = last distance between last two nodes left in add_phyl
-	# removed[-1] = tuple of only two nodes
-	temp_tuple = removed.pop(-1)
-	a = TreeNode(temp_tuple[0], None, factors[-1])
-	b = TreeNode(temp_tuple[1], a, factors[-1])
-	a.parent = b 
-
-	# (self,name,parent,distance,child1=None,child2=None)
-	# node_tuple is (i, j, k), when j was removed 
-	for i, node_tuple in reversed(list(enumerate(removed))): 
-		# 11/18 Workspace:
-			# get j
-			# get d_ij
-			# get trimming factor
-			# get distance between i and k -> how to do this???
-			# 	if i = k's parent or k = i's parent
-			# 		then get i.distance or k.distance
-			# 	if node(s) in between i and k
-			# 		then must bidirectionally walk tree to find shared node
-			# 		and sum up distances travelled
-			# make new internal node
-			# 	dist i to new internal node = x = d_ij - 2*trimming
-			# 	dist j to new internal node = trimming
-			# 	dist k to new internal node = d_ik - x
-
-		i_name = node_tuple[0]
-		i = getnodefromname(a_node,i)
-		j_name = node_tuple[1]
-		j = getnodefromname(a_node,j)
-		k_name = node_tuple[2]
-		k = getnodefromname(a_node,k)
-		d = d_ij[i]
-		trimming = factors[i]
-		path_ik = treepath(i_node,k)
-
-		# Find i and k as two connected nodes whose edge will be the edge j attaches to 
-		# trace path starting from i
-		# 	k = first node in which d_ij < d_i>pathnode
-		# 	i = node immediately before on path
-
-		i_node = path[0]
-		k_node = path[1]
-		for node in path_ik: 
-			if 
-
-		# insertbetween = (d,???j,???)
-
-
-
-		# v = TreeNode(???, None, ???, a, b)
-		pass
-"""
+def add_trimming_factor_helper(t,trimming):
+	#print(t,t.child1,t.child2)
+	# SPECIAL CASE
+	if (t is None):
+		return
+	if (t.child1 is t.child2 and t.child2 is None):
+		# add trimming factor
+		t.distance += trimming
+		if (t.parent.parent is t): # special case
+			t.parent.distance += trimming
+		return
+	else:
+		add_trimming_factor_helper(t.child1,trimming)
+		add_trimming_factor_helper(t.child2,trimming)
 
 
 def additive_phylogeny2(d):
@@ -186,9 +95,11 @@ def additive_phylogeny2(d):
 	removed = []
 	remaining = list(range(d.shape[0]))
 	while(d.shape[0]>2):
+		"""
 		print("next run")
 		print(remaining)
 		print(d)
+		"""
 		trimming,i,j,k = trimming_factor(d)
 		# subtract the trimming factor everywhere but the diagonal
 		d-=(1-np.identity(d.shape[0]))*(2*trimming)
@@ -199,36 +110,88 @@ def additive_phylogeny2(d):
 		d = d[list(range(j))+list(range(j+1,d.shape[0]))]
 		d = d.T[list(range(j))+list(range(j+1,d.shape[1]))].T
 	# add last distance & last two attributes for backtrace...
+	"""
 	print("next run")
 	print(remaining)
 	print(d)
+	"""
 	factors = factors + [d[0][1]]
 	removed = removed + [(remaining[0],remaining[1])]
 	ds.append((remaining,d))
 	return factors,removed,ds
+
+# nodes is only of leaf nodes
+def getdistancematrix(r,nodes):
+	d = np.zeros((len(nodes),len(nodes)))
+	for c in itertools.combinations(nodes,2):
+		dist = sum(treepath(getnodefromname(r,c[0]),c[1])[1::2])
+		d[nodes.index(c[0]),nodes.index(c[1])]=dist
+		d[nodes.index(c[1]),nodes.index(c[0])]=dist
+	return d
 
 def backtrace2(factors,removed,ds):
 	# base case
 	root1 = TreeNode(ds[-1][0][0],None,ds[-1][1][0,1],None,None)
 	root2 = TreeNode(ds[-1][0][1],root1,ds[-1][1][0,1],None,None)
 	root1.parent=root2
+	print(ds[-1][0])
+	print(getdistancematrix(root1,ds[-1][0]))
+	print(ds[-1][1])
 	for x in range(len(factors)-2,-1,-1):
 		header,d = ds[x]
 		i,j,k = removed[x]
 		# go on, add the thing to the tree. i DARE you.
 		path = treepath(getnodefromname(root1,i),k)
 		acc = 0
-		i = iter(enumerate(path[1::2]))
+		it = iter(enumerate(path[1::2]))
+		goal_dist = d[header.index(i),header.index(j)]
+		index = 0
 		while acc<d[header.index(i),header.index(j)]:
-			index,tmp = next(i)
+			# print("acc: " + str(acc))
+			# print("goal distance: " + str(goal_dist))
+			index,tmp = next(it)
 			acc+=tmp
 		left,right = path[::2][index],path[::2][index+1]
+		# get distance between left and where j is to be inserted
+		dij = d[header.index(i),header.index(j)] - sum(treepath(left,i)[1::2])
 		# insert the thing between left and right
-		insertbetween(d,left,TreeNode(j,None,None),right)
+		insertbetween(dij,left,TreeNode(j,None,None),right)
 		# now we add the trimming factor
+		print(factors[x])
+		print(dij)
+		print("debug distance matrixes:")
+		print(header)
+		print(getdistancematrix(root1,header))
+		print(d)
+		print(printtree(root1))
 		add_trimming_factor(root1,factors[x])
 	return root1
 
-print(additive_phylogeny2(test1))
-print(additive_phylogeny2(test2))
+factors,rem,ds = additive_phylogeny2(test1)
+print("forward run over")
+print(factors)
+print(rem)
+print(ds)
+print(printtree(backtrace2(factors,rem,ds)))
 
+if (__name__=="__main__"):
+	factors,rem,ds = additive_phylogeny2(test1)
+	tree1 = backtrace2(factors,rem,ds)
+	assert((getdistancematrix(tree1,[0,1,2,3])==test1).all())
+	factors,rem,ds = additive_phylogeny2(test2)
+	tree2 = backtrace2(factors,rem,ds)
+	assert((getdistancematrix(tree2,[0,1,2,3])==test2).all())
+	print(printtree(tree2))
+
+	leaves = 20
+	for x in range(1000):
+		ttree = createTree(leaves)
+		print("correct tree")
+		print(printtree(ttree))
+		d = getdistancematrix(ttree,list(range(leaves)))
+		factors,rem,ds = additive_phylogeny2(d)
+		tree = backtrace2(factors,rem,ds)
+		print("output tree")
+		print(printtree(tree))
+		d2 = getdistancematrix(tree,list(range(leaves)))
+		assert((d==d2).all())

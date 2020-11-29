@@ -1,3 +1,4 @@
+import random
 
 class TreeNode:
     def __init__(self,name,parent,distance,child1=None,child2=None):
@@ -31,20 +32,20 @@ def printtree_helper(t,acc):
         printtree_helper(t.child1,acc)
         printtree_helper(t.child2,acc)
 
-def insertbetween(d,i,j,k):
+def insertbetween(dij,i,j,k):
     """insert a node between two *directly connected nodes* """
     # i could be k's parent, k could be i's parent, or they could be each other's parents
     if (i.parent==k and not k.parent==i):
-        return insertbetween(d,k,j,i) # symmetry
+        return insertbetween(i.distance-dij,k,j,i) # symmetry
     # now we KNOW that k's parent is i.
-    newbranch = TreeNode(None,i,d[i.name,j.name],k.name,j.name)
-    assert(d[i.name,k.name]==k.distance) # sanity checking
-    assert(d[i.name,j.name]<d[i.name,k.name])
-    k.distance=k.distance-d[i.name,j.name]
+    newbranch = TreeNode(None,i,dij,k,j)
+    #assert(d[i.name,k.name]==k.distance) # sanity checking
+    #assert(d[i.name,j.name]<d[i.name,k.name])
+    k.distance=k.distance-dij
     k.parent=newbranch
     if (i.parent==k):
         i.parent=newbranch
-        i.distance=d[i.name,j.name]
+        i.distance=dij
     j.parent=newbranch
     j.distance=0
     if (i.child1==k):
@@ -58,8 +59,13 @@ def getnodefromname(root,b):
     # TODO: this is an awful hack! too bad !
     return treepath(root,b)[-1]
 
-def treepath(root,b,path=[],distances=[]):
+def treepath(root,b,path=None):
+    # ok so, putting a literal `[]` in the keyword argument actually preserves THAT list forever, so changes to it carry between function calls.
+    # so we put a none in there, and create a brand new list.
+    if (path is None): 
+        path = []
     path.append(root)
+    
     # print("treepath - appending root: " + str(root))
 
     # Base case if at leaf == b
@@ -67,27 +73,27 @@ def treepath(root,b,path=[],distances=[]):
         return path
 
     # Check children if any, return only if not None (means found b)
-    tmp_passing = path.copy()
-    if root.child1: 
-        temp_path1 = treepath_helper(root.child1,b,tmp_passing + [root.child1.distance]) 
+    tmp_path = path.copy()
+    if root.child1:
+        temp_path1 = treepath_helper(root.child1,b,tmp_path + [root.child1.distance]) 
         if temp_path1 != None: 
             return temp_path1
-        elif root.child2: 
-            temp_path2 = treepath_helper(root.child2,b,tmp_passing + [root.child2.distance])
-            if temp_path2 != None: 
-                return temp_path2
+    if root.child2:
+        temp_path2 = treepath_helper(root.child2,b,tmp_path + [root.child2.distance])
+        if temp_path2 != None: 
+            return temp_path2
 
     # Go up a parent
     roots = getroots(root)
     # print("roots: " + str(roots))
     # print("cur path: " + str(path))
     if roots[0] in path and roots[1] in path: 
+        # print("returning bc both roots are in path already")
         return None
-    path = treepath(root.parent,b,tmp_passing + [root.distance])
+    path = treepath(root.parent,b,tmp_path + [root.distance])
 
     return path
 
-# TODO track distances
 def treepath_helper(root,b,path=[]):
     path = path + [root]
     #print(f"contemplating {root.name}")
@@ -102,7 +108,54 @@ def treepath_helper(root,b,path=[]):
         tmp = treepath_helper(root.child2,b,path=path + [root.child2.distance])
         if (not (tmp is None)):
             return tmp
-    return None # it's not us, and our children don't have it.
+    return None
+
+def createTree(numLeaves): 
+    root_a = TreeNode("root_a",None,1,None,None)
+    root_b = TreeNode("root_b",root_a,1,None,None)
+    root_a.parent=root_b
+
+    leaves = list(range(numLeaves))
+    print("leaves: " + str(leaves))
+    random.shuffle(leaves)
+    s = random.randint(1,len(leaves)-1)
+    a,b = leaves[:s],leaves[s:]
+    createTreeHelper(root_a, a)
+    createTreeHelper(root_b, b)
+    return root_a
+
+def createTreeHelper(root, leaves):
+    rand_dist1 = random.randint(1,10)
+    rand_dist2 = random.randint(1,10)
+
+    print("(in helper) leaves: " + str(leaves))
+    if len(leaves) <= 2: 
+        for leaf in leaves: 
+            rand_dist = random.randint(1,10)
+            leaf = TreeNode(leaf, root, rand_dist, None, None)
+            if root.child1 == None:
+                root.child1 = leaf
+            elif root.child2 == None:
+                root.child2 = leaf
+        return root
+    # add leaves to given root
+
+    random.shuffle(leaves)
+    s = random.randint(1,len(leaves)-1)
+    a,b = leaves[:s],leaves[s:]
+    print(a,b)
+
+    # else split up leaves into two, create two new roots, recurse    
+
+    roota = TreeNode(None, root, rand_dist1, None, None)
+    rootb = TreeNode(None, root, rand_dist2, None, None)  
+    root.child1 = roota
+    root.child2 = rootb
+
+    createTreeHelper(roota, a)
+    createTreeHelper(rootb, b)
+
+    return root
 
 
 if __name__=="__main__":
@@ -111,7 +164,8 @@ if __name__=="__main__":
     roota = TreeNode("roota",None,1,None,None)
     rootb = TreeNode("rootb",roota,1,None,None)
     roota.parent=rootb
-
+    print("trivial pathing case:")
+    print(treepath(roota,rootb.name))
     
     print(printtree(roota))
 
@@ -143,5 +197,3 @@ if __name__=="__main__":
     path = []
     print("test btwn node 1 and node9")
     print(treepath(node1,node9.name,path))
-    
-
