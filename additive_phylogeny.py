@@ -88,7 +88,7 @@ def add_trimming_factor_helper(t,trimming):
 		add_trimming_factor_helper(t.child2,trimming)
 
 
-def additive_phylogeny2(d):
+def additive_phylogeny(d):
 	d = d.copy()
 	factors = []
 	ds = []
@@ -129,7 +129,7 @@ def getdistancematrix(r,nodes):
 		d[nodes.index(c[1]),nodes.index(c[0])]=dist
 	return d
 
-def backtrace2(factors,removed,ds):
+def backtrace(factors,removed,ds):
 	# base case
 	root1 = TreeNode(ds[-1][0][0],None,ds[-1][1][0,1],None,None)
 	root2 = TreeNode(ds[-1][0][1],root1,ds[-1][1][0,1],None,None)
@@ -167,19 +167,19 @@ def backtrace2(factors,removed,ds):
 		add_trimming_factor(root1,factors[x])
 	return root1
 
-factors,rem,ds = additive_phylogeny2(test1)
+factors,rem,ds = additive_phylogeny(test1)
 print("forward run over")
 print(factors)
 print(rem)
 print(ds)
-print(printtree(backtrace2(factors,rem,ds)))
+print(printtree(backtrace(factors,rem,ds)))
 
 if (__name__=="__main__"):
-	factors,rem,ds = additive_phylogeny2(test1)
-	tree1 = backtrace2(factors,rem,ds)
+	factors,rem,ds = additive_phylogeny(test1)
+	tree1 = backtrace(factors,rem,ds)
 	assert((getdistancematrix(tree1,[0,1,2,3])==test1).all())
-	factors,rem,ds = additive_phylogeny2(test2)
-	tree2 = backtrace2(factors,rem,ds)
+	factors,rem,ds = additive_phylogeny(test2)
+	tree2 = backtrace(factors,rem,ds)
 	assert((getdistancematrix(tree2,[0,1,2,3])==test2).all())
 	print(printtree(tree2))
 
@@ -189,8 +189,8 @@ if (__name__=="__main__"):
 		print("correct tree")
 		print(printtree(ttree))
 		d = getdistancematrix(ttree,list(range(leaves)))
-		factors,rem,ds = additive_phylogeny2(d)
-		tree = backtrace2(factors,rem,ds)
+		factors,rem,ds = additive_phylogeny(d)
+		tree = backtrace(factors,rem,ds)
 		print("output tree")
 		print(printtree(tree))
 		d2 = getdistancematrix(tree,list(range(leaves)))
