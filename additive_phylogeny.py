@@ -206,5 +206,5 @@ if (__name__=="__main__"):
 	print(rem)
 	print(ds)
 	tree_nonadd = backtrace(factors,rem,ds)
-	if(getdistancematrix(tree_nonadd,[0,1,2,3])!=test_nonadd): 
+	if not (getdistancematrix(tree_nonadd,[0,1,2,3])==test_nonadd).all(): 
 		print("Test_nonadd is not additive.")
