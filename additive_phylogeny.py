@@ -178,6 +178,13 @@ def backtrace(factors,removed,ds):
 		add_trimming_factor(root1,factors[x])
 	return root1
 
+factors,rem,ds = additive_phylogeny(test1)
+print("forward run over")
+print(factors)
+print(rem)
+print(ds)
+print(printtree(backtrace(factors,rem,ds)))
+
 if (__name__=="__main__"):
 	factors,rem,ds = additive_phylogeny(test1)
 	tree1 = backtrace(factors,rem,ds)
@@ -187,7 +194,7 @@ if (__name__=="__main__"):
 	assert((getdistancematrix(tree2,[0,1,2,3])==test2).all())
 	print(printtree(tree2))
 
-	leaves = 4
+	leaves = 20
 	for x in range(1000):
 		ttree = createTree(leaves)
 		print("correct tree")
