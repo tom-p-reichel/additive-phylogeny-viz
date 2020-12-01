@@ -44,6 +44,11 @@ test2 = np.array([[0,7,3,6],
 				  [6,7,7,0]
 				],dtype="float32")
 
+test_nonadd = np.array([[0,2,2,2],
+						[2,0,3,2],
+						[2,3,0,2],
+						[2,2,2,0]],dtype="float32")
+
 
 def trimming_factor(d):
 	"""
@@ -101,6 +106,11 @@ def additive_phylogeny(d):
 		print(d)
 		"""
 		trimming,i,j,k = trimming_factor(d)
+		# TODO: check if additive here? 
+		if not trimming: 
+			print("Distance matrix is not additive.")
+			return factors,removed,ds
+
 		# subtract the trimming factor everywhere but the diagonal
 		d-=(1-np.identity(d.shape[0]))*(2*trimming)
 		ds.append((remaining.copy(),d))
@@ -156,6 +166,7 @@ def backtrace(factors,removed,ds):
 		dij = d[header.index(i),header.index(j)] - sum(treepath(left,i)[1::2])
 		# insert the thing between left and right
 		insertbetween(dij,left,TreeNode(j,None,None),right)
+		# TODO: check if additive here?
 		# now we add the trimming factor
 		print(factors[x])
 		print(dij)
@@ -167,13 +178,6 @@ def backtrace(factors,removed,ds):
 		add_trimming_factor(root1,factors[x])
 	return root1
 
-factors,rem,ds = additive_phylogeny(test1)
-print("forward run over")
-print(factors)
-print(rem)
-print(ds)
-print(printtree(backtrace(factors,rem,ds)))
-
 if (__name__=="__main__"):
 	factors,rem,ds = additive_phylogeny(test1)
 	tree1 = backtrace(factors,rem,ds)
@@ -183,7 +187,7 @@ if (__name__=="__main__"):
 	assert((getdistancematrix(tree2,[0,1,2,3])==test2).all())
 	print(printtree(tree2))
 
-	leaves = 20
+	leaves = 4
 	for x in range(1000):
 		ttree = createTree(leaves)
 		print("correct tree")
@@ -195,3 +199,6 @@ if (__name__=="__main__"):
 		print(printtree(tree))
 		d2 = getdistancematrix(tree,list(range(leaves)))
 		assert((d==d2).all())
+
+	# factors,rem,ds = additive_phylogeny(test_nonadd)
+	
