@@ -92,7 +92,6 @@ def add_trimming_factor_helper(t,trimming):
 		add_trimming_factor_helper(t.child1,trimming)
 		add_trimming_factor_helper(t.child2,trimming)
 
-
 def additive_phylogeny(d):
 	d = d.copy()
 	factors = []
@@ -106,10 +105,6 @@ def additive_phylogeny(d):
 		print(d)
 		"""
 		trimming,i,j,k = trimming_factor(d)
-		# TODO: check if additive here? 
-		if not trimming: 
-			print("Distance matrix is not additive.")
-			return factors,removed,ds
 
 		# subtract the trimming factor everywhere but the diagonal
 		d-=(1-np.identity(d.shape[0]))*(2*trimming)
@@ -166,7 +161,6 @@ def backtrace(factors,removed,ds):
 		dij = d[header.index(i),header.index(j)] - sum(treepath(left,i)[1::2])
 		# insert the thing between left and right
 		insertbetween(dij,left,TreeNode(j,None,None),right)
-		# TODO: check if additive here?
 		# now we add the trimming factor
 		print(factors[x])
 		print(dij)
@@ -207,5 +201,10 @@ if (__name__=="__main__"):
 		d2 = getdistancematrix(tree,list(range(leaves)))
 		assert((d==d2).all())
 
-	# factors,rem,ds = additive_phylogeny(test_nonadd)
-	
+	factors,rem,ds = additive_phylogeny(test_nonadd)
+	print(factors)
+	print(rem)
+	print(ds)
+	tree_nonadd = backtrace(factors,rem,ds)
+	if(getdistancematrix(tree_nonadd,[0,1,2,3])!=test_nonadd): 
+		print("Test_nonadd is not additive.")
