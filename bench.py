@@ -7,7 +7,15 @@ import os
 import time
 import matplotlib.pyplot as plt
 
-n = 50
+
+
+
+parser = argparse.ArgumentParser(description="benchmark the additive phylogeny algorithm")
+parser.add_argument("n",help="the maximum matrix size to benchmark the algorithm on")
+parser.add_argument("order",help="a comma separated list of integer order polynomials to regress the runtime with")
+args = parser.parse_args()
+
+n = int(args.n)
 dat = np.zeros((n-2,2))
 for x in range(2,n):
 	print(x)
@@ -22,7 +30,8 @@ for x in range(2,n):
 dat = dat.mean(axis=1)
 
 
-for p in range(3,5):
+for p in args.order.split(","):
+	p = int(p)+1
 	regX = np.zeros((p,n-2))
 	for x in range(p):
 		print(x)
@@ -37,5 +46,9 @@ for p in range(3,5):
 
 plt.plot(dat,label="true data")
 
+
+plt.xlabel("n")
+plt.xlabel("time (seconds)")
+plt.title("additive phylogeny runtime")
 plt.legend()
 plt.show()
