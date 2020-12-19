@@ -139,9 +139,9 @@ def backtrace(factors,removed,ds):
 	root1 = TreeNode(ds[-1][0][0],None,ds[-1][1][0,1],None,None)
 	root2 = TreeNode(ds[-1][0][1],root1,ds[-1][1][0,1],None,None)
 	root1.parent=root2
-	print(ds[-1][0])
-	print(getdistancematrix(root1,ds[-1][0]))
-	print(ds[-1][1])
+	#print(ds[-1][0])
+	#print(getdistancematrix(root1,ds[-1][0]))
+	#print(ds[-1][1])
 	for x in range(len(factors)-2,-1,-1):
 		header,d = ds[x]
 		i,j,k = removed[x]
@@ -162,6 +162,7 @@ def backtrace(factors,removed,ds):
 		# insert the thing between left and right
 		insertbetween(dij,left,TreeNode(j,None,None),right)
 		# now we add the trimming factor
+		"""
 		print(factors[x])
 		print(dij)
 		print("debug distance matrixes:")
@@ -169,17 +170,17 @@ def backtrace(factors,removed,ds):
 		print(getdistancematrix(root1,header))
 		print(d)
 		print(printtree(root1))
+		"""
 		add_trimming_factor(root1,factors[x])
 	return root1
-
-factors,rem,ds = additive_phylogeny(test1)
-print("forward run over")
-print(factors)
-print(rem)
-print(ds)
-print(printtree(backtrace(factors,rem,ds)))
-
 if (__name__=="__main__"):
+	factors,rem,ds = additive_phylogeny(test1)
+	print("forward run over")
+	print(factors)
+	print(rem)
+	print(ds)
+	print(printtree(backtrace(factors,rem,ds)))
+	
 	factors,rem,ds = additive_phylogeny(test1)
 	tree1 = backtrace(factors,rem,ds)
 	assert((getdistancematrix(tree1,[0,1,2,3])==test1).all())

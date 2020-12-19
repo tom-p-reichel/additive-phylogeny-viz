@@ -116,7 +116,7 @@ def createTree(numLeaves):
     root_a.parent=root_b
 
     leaves = list(range(numLeaves))
-    print("leaves: " + str(leaves))
+    #print("leaves: " + str(leaves))
     random.shuffle(leaves)
     s = random.randint(1,len(leaves)-1)
     a,b = leaves[:s],leaves[s:]
@@ -128,7 +128,7 @@ def createTreeHelper(root, leaves):
     rand_dist1 = random.randint(1,10)
     rand_dist2 = random.randint(1,10)
 
-    print("(in helper) leaves: " + str(leaves))
+    #print("(in helper) leaves: " + str(leaves))
     if len(leaves) <= 2: 
         for leaf in leaves: 
             rand_dist = random.randint(1,10)
@@ -143,7 +143,7 @@ def createTreeHelper(root, leaves):
     random.shuffle(leaves)
     s = random.randint(1,len(leaves)-1)
     a,b = leaves[:s],leaves[s:]
-    print(a,b)
+    #print(a,b)
 
     # else split up leaves into two, create two new roots, recurse    
 
