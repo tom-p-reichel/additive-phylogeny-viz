@@ -1,4 +1,5 @@
 import random
+from collections import defaultdict
 
 class TreeNode:
     def __init__(self,name,parent,distance,child1=None,child2=None):
@@ -16,21 +17,23 @@ def getroots(t):
         t = t.parent
     return (t,t.parent)
 
-def printtree(t):
+def printtree(t,highlight=defaultdict(lambda:"black")):
     roots = getroots(t)
     acc = ["digraph {"] #,f"node{id(roots[0])} -> node{id(roots[1])} [label=\"{roots[0].distance}\"];",f"node{id(roots[0])} -> node{id(roots[1])};"]
-    printtree_helper(roots[0],acc)
-    printtree_helper(roots[1],acc)
+    printtree_helper(roots[0],acc,highlight=highlight)
+    printtree_helper(roots[1],acc,highlight=highlight)
     acc.append("}")
     return "\n".join(acc)
 
-def printtree_helper(t,acc):
+def printtree_helper(t,acc,highlight):
     if (not (t is None)):
-        if (not (t.name is None)):
-            acc.append(f"node{id(t)} [label=\"{t.name}\"];")
+        if (t.name is None):
+            acc.append(f"node{id(t)} [label=\"\",color=\"{highlight[t]}\"];")
+        else:
+            acc.append(f"node{id(t)} [label=\"{t.name}\",color=\"{highlight[t]}\"];")
         acc.append(f"node{id(t.parent)} -> node{id(t)} [label=\"{t.distance}\"];")
-        printtree_helper(t.child1,acc)
-        printtree_helper(t.child2,acc)
+        printtree_helper(t.child1,acc,highlight)
+        printtree_helper(t.child2,acc,highlight)
 
 def insertbetween(dij,i,j,k):
     """insert a node between two *directly connected nodes* """

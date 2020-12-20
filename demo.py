@@ -5,7 +5,7 @@ import h5py
 import numpy as np
 import os
 import sys
-
+from collections import defaultdict
 
 def showtree(tree):
 	dot = printtree(tree)
@@ -14,8 +14,8 @@ def showtree(tree):
 	os.system("dot -Tpng tmptree.dot | feh -")
 
 
-def savetree(tree,frame):
-	dot = printtree(tree)
+def savetree(tree,frame,highlight=defaultdict(lambda:"black")):
+	dot = printtree(tree,highlight=highlight)
 	with open("tmptree.dot","w") as f:
 		f.write(dot)
 	os.system(f"dot -Tpng tmptree.dot > {frame}")
@@ -43,6 +43,15 @@ factors,rem,ds = additive_phylogeny(d)
 
 for x in range(len(factors)):
 	intermediate = backtrace(factors[-x:],rem[-x:],ds[-x:])
-	savetree(intermediate,f"{args.outputdir}/{x}.png")
+	# highlight some nodes we're about to insert stuff on
+	colors = defaultdict(lambda:"black")
+	if (x!=0):
+		for j in treepath(getnodefromname(intermediate,rem[-x][0]),rem[-x][-1])[::2]:
+			colors[j]="red"
+		if (len(rem[-x])==3):
+			colors[getnodefromname(intermediate,rem[-x][1])]="green"
+	savetree(intermediate,f"{args.outputdir}/{x}.png",highlight=colors)
+# okay so the 0th frame is the last frame for ffmpeg & thumbnail purposes, but it should also be the actual last frame.
+savetree(backtrace(factors,rem,ds),f"{args.outputdir}/{len(factors)}.png")
 # os.cp(f"{args.outputdir}/0.png",f"{args.outputdir}/{len(factors)}.png")
 # todo, make last frame same as frame 0

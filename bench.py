@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 
 
 
-
 parser = argparse.ArgumentParser(description="benchmark the additive phylogeny algorithm")
 parser.add_argument("n",help="the maximum matrix size to benchmark the algorithm on")
 parser.add_argument("order",help="a comma separated list of integer order polynomials to regress the runtime with")
@@ -26,9 +25,10 @@ for x in range(2,n):
 		bt = backtrace(*additive_phylogeny(d))
 		ft = time.time()-st
 		dat[x-2][i]=ft
-#dat = pickle.load(open("tdata.pk","rb"))
 dat = dat.mean(axis=1)
-
+#n=200
+#dat = pickle.load(open("tdata.pk","rb"))
+#for the purposes of loading in a suspended and resumed benchmark
 
 for p in args.order.split(","):
 	p = int(p)+1
@@ -48,7 +48,7 @@ plt.plot(dat,label="true data")
 
 
 plt.xlabel("n")
-plt.xlabel("time (seconds)")
+plt.ylabel("time (seconds)")
 plt.title("additive phylogeny runtime")
 plt.legend()
 plt.show()
