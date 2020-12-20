@@ -2,7 +2,9 @@
 
 This repo contains an implementation of the additive phylogeny algorithm as well as a couple application scripts.
 
-Similarity or differences between sequences or species can be modeled by phylogenetic trees. Unfortunately, experimental data rarely yields trees. This is where the large additive phylogeny algorithm can help: if a tree exists whose inter-leaf distances represents entries in some distance matrix, then the large additive phylogeny algorithm can produce that tree from the distance matrix. Our project focuses on the implementation and visualization of the large additive phylogeny problem algorithm discussed in class, which shows how each taxon is added onto the graph and which edge weights are changed throughout the execution of the algorithm.
+The degree of similarity between genetic sequences of varying species can be modeled by phylogenetic trees. Unfortunately, since we cannot go into the past to ensure the correct evolutionary relationships, the construction of phylogenetic trees are considered hypotheses in modeling species’ evolution from each other. [1] This is where the large additive phylogeny algorithm can help in finding a proposed evolutionary relationship: if a tree exists whose inter-leaf distances represents entries in some distance matrix, then the large additive phylogeny algorithm can produce that tree from the distance matrix. Our project focuses on the implementation and visualization of the large additive phylogeny problem algorithm discussed in class, which shows how each taxon is added onto the graph and which edge weights are changed throughout the execution of the algorithm.
+
+[1] Phylogenetic Trees | Biology for Majors I. https://courses.lumenlearning.com/suny-wmopen-biology1/chapter/phylogenetic-trees/. Accessed 20 Dec. 2020.
 
 
 # Dependencies
