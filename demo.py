@@ -28,9 +28,10 @@ p.add_argument("outputdir",help="a directory in which to place frames of the add
 args = p.parse_args()
 
 if (args.n):
-	tree = createTree(args.n)
-	d = getdistancematrix(tree,list(range(20)))
-elif(args.csv):
+	n = int(args.n)
+	tree = createTree(n)
+	d = getdistancematrix(tree,list(range(n)))
+elif (args.csv):
 	with open(args.csv,"r") as f:
 		d = np.array([[int(x) for x in l.split(",")] for l in f.readlines() if l!=""],dtype="float32")
 else:
