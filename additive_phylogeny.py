@@ -32,9 +32,9 @@ test1 = np.array([[0,5,3,4],
 
 # """
 #        B(1)
-#   _2__/ 
-#  /    
-# C(2)   
+#   _2__/
+#  /
+# C(2)
 # """
 
 
@@ -49,6 +49,11 @@ test_nonadd = np.array([[0,2,2,2],
 						[2,3,0,2],
 						[2,2,2,0]],dtype="float32")
 
+random_test = np.array([[0,11,10,9,15],
+						[11,0,3,12,18],
+						[10,3,0,11,17],
+						[9,12,11,0,8],
+						[15,18,17,8,0]],dtype="float32")
 
 def trimming_factor(d):
 	"""
@@ -71,7 +76,7 @@ def trimming_factor(d):
 	return trimmingfactors[m],i[m],j[m],k[m]
 
 def add_trimming_factor(t, trimming):
-	# find every leaf and add trimming parameter 
+	# find every leaf and add trimming parameter
 	# check format in roots
 	roots = getroots(t)
 	add_trimming_factor_helper(roots[0],trimming)
@@ -180,7 +185,7 @@ if (__name__=="__main__"):
 	print(rem)
 	print(ds)
 	print(printtree(backtrace(factors,rem,ds)))
-	
+
 	factors,rem,ds = additive_phylogeny(test1)
 	tree1 = backtrace(factors,rem,ds)
 	assert((getdistancematrix(tree1,[0,1,2,3])==test1).all())
@@ -207,5 +212,5 @@ if (__name__=="__main__"):
 	print(rem)
 	print(ds)
 	tree_nonadd = backtrace(factors,rem,ds)
-	if not (getdistancematrix(tree_nonadd,[0,1,2,3])==test_nonadd).all(): 
+	if not (getdistancematrix(tree_nonadd,[0,1,2,3])==test_nonadd).all():
 		print("Test_nonadd is not additive.")
