@@ -2,6 +2,9 @@
 
 This repo contains an implementation of the additive phylogeny algorithm as well as a couple application scripts.
 
+Similarity or differences between sequences or species can be modeled by phylogenetic trees. Unfortunately, experimental data rarely yields trees. This is where the large additive phylogeny algorithm can help: if a tree exists whose inter-leaf distances represents entries in some distance matrix, then the large additive phylogeny algorithm can produce that tree from the distance matrix. Our project focuses on the implementation and visualization of the large additive phylogeny problem algorithm discussed in class, which shows how each taxon is added onto the graph and which edge weights are changed throughout the execution of the algorithm.
+
+
 # Dependencies
 
  - recent Python 3 version
